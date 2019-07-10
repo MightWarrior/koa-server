@@ -1,6 +1,6 @@
-const Response = require('core/Response');
-const ideas = require('../../ideas');
-const users = require('../../users');
+const Response = require('../Response');
+const Joi = require('joi');
+const schema = require('../validation.js');
 
 class AppModule {
   async ping(ctx) {
@@ -12,21 +12,39 @@ class AppModule {
   }
 
   async getIdeas(ctx) {
-    return Response.json(ctx, ideas);
+    const result = await ctx.db.query(
+      `select ideas.*, users.username as author from ideas, users where ideas.user_id = users.id`
+    );
+    ctx.body = result.rows;
   }
 
   async getIdeasByID(ctx) {
-    return Response.json(ctx, ideas[ctx.params.id - 1]);
+    const result = await ctx.db.query(
+      `select * from ideas WHERE ideas.id = ${ctx.params.id}`
+    );
+    ctx.body = result.rows;
   }
 
   async postIdeas(ctx) {
-    ideas.push(ctx.request.body);
-    return Response.json(ctx, ctx.request.body);
+    const { title, description, user_id } = ctx.request.body;
+    const { error, value } = Joi.validate(
+      { title: title, description: description, author: user_id },
+      schema
+    );
+    ctx.assert(error === null, 400, error);
+    const result = await ctx.db.query(
+      `insert into ideas (title, description, user_id) values($1, $2, $3) RETURNING *`,
+      [title, description, user_id]
+    );
+    return Response.json(ctx, result.rows[0]);
   }
 
   async deleteIdeas(ctx) {
-    ideas.splice(ctx.params.id - 1, 1);
-    return Response.text(ctx, 'Successfully deleted');
+    const result = await ctx.db.query(
+      `delete from ideas where ideas.id = ${ctx.params.id} RETURNING *`
+    );
+    ctx.body = result.rows;
+    return Response.json(ctx, result.rows[0]);
   }
 
   async putIdeas(ctx) {

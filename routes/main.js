@@ -1,7 +1,6 @@
 const Router = require('koa2-router');
-const users = require('../users');
 
-const AppModule = require('core/modules/AppModule');
+const AppModule = require('../core/modules/AppModule');
 
 const router = new Router();
 
@@ -15,10 +14,6 @@ const checkAuth = (ctx, next) => {
     }
   }
 };
-
-router.get('/ping', ctx => {
-  return AppModule.ping(ctx);
-});
 
 router.get('/ideas', ctx => {
   return AppModule.getIdeas(ctx);

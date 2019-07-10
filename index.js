@@ -1,6 +1,6 @@
-const config = require('config');
-const App = require("core/App");
-const Server = require("core/Server");
+const config = require('./config');
+const App = require('./core/App');
+const Server = require('./core/Server');
 
 let RunApp = async () => {
   await App.init();
