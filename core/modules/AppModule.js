@@ -6,6 +6,7 @@ const { Op } = require('sequelize');
 const Idea = require('../../models/idea');
 const Like = require('../../models/likes');
 const User = require('../../models/users');
+
 class AppModule {
   async ping(ctx) {
     return Response.text(ctx, 'pong');

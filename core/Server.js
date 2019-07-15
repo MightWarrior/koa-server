@@ -10,8 +10,7 @@ class Server {
   }
 
   async start(port) {
-    this.server.listen(port);
-    console.log(`Server listen on port ${port}`);
+    return this.server.listen(port);
   }
 }
 

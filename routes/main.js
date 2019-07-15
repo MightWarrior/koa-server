@@ -12,6 +12,10 @@ const checkAuth = (ctx, next) => {
   }
 };
 
+router.get('/ping', ctx => {
+  return AppModule.ping(ctx);
+});
+
 router.get('/ideas', ctx => {
   return AppModule.getIdeas(ctx);
 });
@@ -20,7 +24,7 @@ router.get('/ideas/:id', ctx => {
   return AppModule.getIdeasByID(ctx);
 });
 
-router.post('/ideas', checkAuth, ctx => {
+router.post('/ideas', ctx => {
   return AppModule.postIdeas(ctx);
 });
 
