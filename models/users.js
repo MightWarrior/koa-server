@@ -1,20 +1,26 @@
 const Sequelize = require('sequelize');
-const { Model } = Sequelize;
+const sequelize = require('lib/database');
 
-class User extends Model {}
-
-module.exports = {
-  getModel: sequelize => {
-    User.init(
-      {
-        username: Sequelize.STRING,
-        password: Sequelize.STRING,
-        islogged: Sequelize.BOOLEAN,
-        registration_date: Sequelize.DATE
-      },
-      { sequelize, tableName: 'users', timestamps: false }
-    );
-
-    return User;
+const Users = sequelize.define(
+  'users',
+  {
+    name: {
+      type: Sequelize.STRING
+    },
+    password: {
+      type: Sequelize.STRING
+    },
+    isLogged: {
+      type: Sequelize.BOOLEAN
+    },
+    registration_date: {
+      type: Sequelize.DATE
+    }
+  },
+  {
+    sequelize,
+    tableName: 'users',
+    timestamps: false
   }
-};
+);
+module.exports = Users;

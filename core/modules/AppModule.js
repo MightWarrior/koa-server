@@ -4,7 +4,6 @@ const schema = require('../validation.js');
 
 const { Op } = require('sequelize');
 const Idea = require('../../models/idea');
-const Like = require('../../models/likes');
 const User = require('../../models/users');
 
 class AppModule {
@@ -17,16 +16,14 @@ class AppModule {
   }
 
   async getIdeas(ctx) {
-    const model = Idea.getModel(ctx.sequelize);
-    const ideas = await model.findAll({
-      attributes: ['id', 'title', 'description', 'user_id']
+    const ideas = await Idea.findAll({
+      attributes: ['id', 'title', 'description', 'userId']
     });
     return Response.json(ctx, ideas);
   }
 
   async getIdeasByID(ctx) {
-    const model = Idea.getModel(ctx.sequelize);
-    const ideas = await model.findOne({
+    const ideas = await Idea.findOne({
       where: {
         id: ctx.params.id
       }
@@ -35,23 +32,21 @@ class AppModule {
   }
 
   async postIdeas(ctx) {
-    const { title, description, user_id } = ctx.request.body;
+    const { title, description, userId } = ctx.request.body;
     const { error, value } = Joi.validate(
-      { title: title, description: description, author: user_id },
+      { title: title, description: description, author: userId },
       schema
     );
     ctx.assert(error === null, 400, error);
-    const model = Idea.getModel(ctx.sequelize);
-    const newIdea = await model.create(
-      { title, description, user_id },
-      { fields: ['title', 'description', 'user_id'] }
+    const newIdea = await Idea.create(
+      { title, description, userId },
+      { fields: ['title', 'description', 'userId'] }
     );
     return Response.json(ctx, newIdea);
   }
 
   async deleteIdeas(ctx) {
-    const model = Idea.getModel(ctx.sequelize);
-    const deletedIdea = await model.destroy({
+    const deletedIdea = await Idea.destroy({
       where: {
         id: ctx.params.id
       }
@@ -59,14 +54,8 @@ class AppModule {
     return Response.json(ctx, deletedIdea);
   }
 
-  async putIdeas(ctx) {
-    ideas[ctx.params.id - 1] = ctx.request.body;
-    return Response.json(ctx, ctx.request.body);
-  }
-
   async getUsers(ctx) {
-    const model = User.getModel(ctx.sequelize);
-    const users = await model.findAll({
+    const users = await User.findAll({
       attributes: ['id', 'username', 'islogged', 'registration_date']
     });
     return Response.json(ctx, users);
@@ -79,8 +68,7 @@ class AppModule {
       isLogged,
       registration_date
     } = ctx.request.body;
-    const model = User.getModel(ctx.sequelize);
-    const newUser = await model.create(
+    const newUser = await User.create(
       { username, password, isLogged, registration_date },
       { fields: ['username', 'password', 'isLogged', 'registration_date'] }
     );
@@ -90,8 +78,7 @@ class AppModule {
   async logIn(ctx) {
     const { username, password } = ctx.request.body;
 
-    const model = User.getModel(ctx.sequelize);
-    const user = await model.findOne({
+    const user = await User.findOne({
       attributes: ['id', 'username'],
       where: {
         username: {
@@ -110,13 +97,9 @@ class AppModule {
   }
 
   async privateIdeas(ctx) {
-    const model = Idea.getModel(ctx.sequelize);
-    const idea = await model.findAll({
+    const idea = await Idea.findAll({
       where: {
-        user_id: {
-          [Op.ne]: null
-        },
-        user_id: ctx.session.user
+        userId: ctx.session.user
       }
     });
     ctx.body = idea;

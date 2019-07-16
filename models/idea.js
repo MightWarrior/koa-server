@@ -1,22 +1,23 @@
 const Sequelize = require('sequelize');
-const { Model } = Sequelize;
-const User = require('./users');
+const sequelize = require('lib/database');
+const Users = require('models/Users');
 
-class Idea extends Model {}
-
-module.exports = {
-  getModel: sequelize => {
-    Idea.init(
-      {
-        title: Sequelize.STRING,
-        description: Sequelize.STRING,
-        user_id: Sequelize.INTEGER
-      },
-      { sequelize, tableName: 'ideas', timestamps: false }
-    );
-
-    // Idea.belongsTo(User);
-
-    return Idea;
+const Ideas = sequelize.define(
+  'ideas',
+  {
+    title: {
+      type: Sequelize.STRING
+    },
+    description: {
+      type: Sequelize.STRING
+    }
+  },
+  {
+    sequelize,
+    tableName: 'ideas',
+    timestamps: false
   }
-};
+);
+Ideas.belongsTo(Users);
+
+module.exports = Ideas;
