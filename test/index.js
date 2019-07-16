@@ -11,6 +11,7 @@ chai.use(chaiHttp);
 
 describe('Application', () => {
   let api;
+  let Cookies;
 
   before(async () => {
     await app.init();
@@ -68,5 +69,29 @@ describe('Application', () => {
     });
   });
 
-  describe();
+  describe('Sessions tests', () => {
+    it('should create user session for valid user', done => {
+      chai
+        .request(api)
+        .post('/login')
+        .send({ username: 'admin', password: 'admin' })
+        .end((err, res) => {
+          res.should.have.status(200);
+          Cookies = res.body;
+          done();
+        });
+    });
+
+    it('should get user session for current user', done => {
+      chai
+        .request(api)
+        .get('/users')
+        .send({ username: 'admin' })
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body[0].id.should.equal(Cookies);
+          done();
+        });
+    });
+  });
 });

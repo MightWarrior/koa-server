@@ -19,7 +19,7 @@ class AppModule {
   async getIdeas(ctx) {
     const model = Idea.getModel(ctx.sequelize);
     const ideas = await model.findAll({
-      attributes: ['title', 'description', 'user_id']
+      attributes: ['id', 'title', 'description', 'user_id']
     });
     return Response.json(ctx, ideas);
   }
@@ -67,7 +67,7 @@ class AppModule {
   async getUsers(ctx) {
     const model = User.getModel(ctx.sequelize);
     const users = await model.findAll({
-      attributes: ['username', 'islogged', 'registration_date']
+      attributes: ['id', 'username', 'islogged', 'registration_date']
     });
     return Response.json(ctx, users);
   }
